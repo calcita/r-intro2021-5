@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Intro a la programación en R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="  Creative Commons Attribution 4.0 International License" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Intro a la programación en R
+## Diploma y Maestría en Demografía FCS <br> Gabriela Mathieu <br> Junio 2021
+### <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br /> <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+
+---
+
+
+
+
+
+
+
+
+
+
+# ¿Qué haremos hoy?
+
+- Repaso del taller anterior
+
+- Gráfico de pirámide de población con ggplot2
+
+- Variable de clase `factor` y paquete `forcats`
+
+- Introducción al paquete `sf`
+
+---
+# Estimaciones y proyecciones de población
+
+Datos de Uruguay sobre población estimada y proyectada por año, según sexo y edad en grupos. Descargado desde la web del [INE](https://www.ine.gub.uy/web/guest/estimaciones-y-proyecciones).
+
+
+
+```r
+pob_uy &lt;- readxl::read_excel("data/pop_uy_ine.xlsx")
+```
+
+---
+# Pirámide población
+
+Debo convertir la variable edad que es de clase character en clase factor, de esta manera se verá ordenada en el gráfico de menor a mayor. 
+
+Una variable factor además de los valores tiene asociadas etiquetas. Tiene más información que una variable character.
+
+
+```r
+library(forcats)
+library(dplyr)
+
+pob_uy &lt;-  pob_uy %&gt;%
+  select(edad, total_2020, sexo) %&gt;% 
+* mutate(edad_fct = as_factor(edad))
+
+class(pob_uy$edad); class(pob_uy$edad_fct)
+```
+
+```
+[1] "character"
+```
+
+```
+[1] "factor"
+```
+
+---
+# Pirámide población (parte 1)
+
+&lt;!-- https://www.r-graph-gallery.com/267-reorder-a-variable-in-ggplot2.html --&gt;
+
+.pull-left[
+
+```r
+library(ggplot2)
+
+ggplot(data = pob_uy) +
+  aes(x = edad_fct, y = total_2020) +
+* geom_bar(data = pob_uy %&gt;%
+             filter(sexo == "m"),
+           stat = "identity",
+           aes(fill = sexo)) +
+* geom_bar(data = pob_uy %&gt;%
+             filter(sexo == "h"),
+           stat = "identity",
+           aes(y = -total_2020,
+               fill = sexo))
+```
+]
+.pull-right[
+&lt;img src="taller_sf_files/figure-html/unnamed-chunk-7-1.png" width="432" /&gt;
+
+]
+
+---
+# Pirámide población (parte 2)
+
+&lt;!-- https://www.r-graph-gallery.com/267-reorder-a-variable-in-ggplot2.html --&gt;
+
+.pull-left[
+
+```r
+library(ggplot2)
+
+ggplot(data = pob_uy, aes(x = edad_fct, y = total_2020)) +
+  geom_bar(data = pob_uy %&gt;% filter(sexo == "m"),
+           stat = "identity",
+           mapping = aes(fill = sexo)) +
+  geom_bar(data = pob_uy %&gt;% filter(sexo == "h"),
+           stat = "identity",
+           mapping = aes(y = -total_2020, fill = sexo)) +
+* coord_flip() +
+  labs(title = "Pirámide de población - Uruguay 2020",
+       subtitle = "Proyecciones de población",
+       caption = "Fuente: INE",
+       x = "población",
+       y = "edad")+
+  theme_minimal() +
+* theme(legend.position = "bottom")
+```
+]
+.pull-right[
+&lt;img src="taller_sf_files/figure-html/unnamed-chunk-9-1.png" width="432" /&gt;
+
+]
+
+---
+# Ejercicio
+
+- Cambiar los colores de las barras a '#d8b365' y '#5ab4ac'.
+
+- Cambiar el título de la leyenda a mayúscula.
+
+
+---
+class: inverse, center, middle
+# Mapas
+
+---
+# Mapa del mundo
+
+&lt;img src="img/china.jpg" width="711" style="display: block; margin: auto;" /&gt;
+
+
+---
+# GDS (Geographical Data Science)
+
+- &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;R no es un SIG&lt;/span&gt;(Sistemas de Información Geográficos). ¿Conocen gvSIG, Qgis, etc.?
+&lt;br&gt;&lt;br&gt;
+--
+
+- R permite &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;hacer Ciencia de Datos Geográficos&lt;/span&gt; (SDG)
+&lt;br&gt;&lt;br&gt;
+--
+
+&lt;br&gt;&lt;br&gt;
+
+| Atributos     | SIG | SDG |
+|---------------|:-------------:|:-------------:|
+|Disciplinas | Geografía | Geografía, Computación, Estadística|
+| Foco | Interfaz Gráfica | Código |
+| Reproducibilidad | Mínimo | Máximo |
+
+---
+# Paquetes
+
+.pull-left[
+
+- Conectar R con SIG: GRASS GIS (rgrass7), SAGA (RSAGA), QGIS (RQGIS y qgisremote), ArcGIS (arcgisbinding).
+
+
+- &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;sp&lt;/span&gt;, [&lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;sf&lt;/span&gt;](https://r-spatial.github.io/sf/): manejar información espacial vectorial utilizan geometría (puntos, polilíneas, polígonos). Por ejemplo, carreteras, árboles, edificios, etc.
+
+&lt;img src="img/real_raster_vector.jpg" width="284" style="display: block; margin: auto;" /&gt;
+
+]
+.pull-right[
+
+
+- &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;raster&lt;/span&gt;: trabajar con ráster. Representar información que es continua a través de un área y se pierde mucha información si se trabaja en entidades vectoriales. Los ráster se componen de una matriz de píxeles del mismo tamaño, cada uno con un valor que representa las condiciones de la zona cubierta por dicha celda/pixel.
+
+- &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;ggplot2&lt;/span&gt;, rasterVis, tmap, leaflet, o mapview: para visualizar información espacial
+
+]
+&lt;!-- https://geocompr.robinlovelace.net/spatial-class.html --&gt;
+&lt;!-- https://cengel.github.io/R-spatial/ --&gt;
+&lt;!-- https://www.jessesadler.com/post/gis-with-r-intro/ --&gt;
+
+---
+# Sistema de coordenadas
+
+.pull-left[
+- Es un sistema para codificar cada una de las posiciones sobre la superficie de la tierra y asignar a estas las correspondientes coordenadas.
+
+- La forma de la tierra se aproxima a un elipsoide, por lo que se usan elementos de la geometrı́a esférica para definir el sistema de referecia.
+
+- &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;Sistema de coordenadas geográficas&lt;/span&gt;: es un sistema de coordenadas esféricas mediante el cual un punto se localiza con dos valores angulares, &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;longitud&lt;/span&gt; y &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;latitud&lt;/span&gt;.
+
+]
+
+.pull-right[
+&lt;img src="img/lat_lon.png" width="211" style="display: block; margin: auto;" /&gt;
+
+Los paralelos permiten medir la latitud
+
+Los meridianos permiten medir la longitud
+
+Fuente: [Sistemas de Información Geográfica](https://volaya.github.io/libro-sig/), Victor Olaya.
+
+]
+
+
+---
+# Proyecciones cartográficas
+
+La geometrı́a plana resulta mucho más intuitiva y práctica que la geometrı́a esférica para realizar ciertos cálculos.
+
+El proceso de &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;asignar una coordenada plana a cada punto de la superficie de la Tierra&lt;/span&gt; (que no es plana) se conoce como proyección cartográfica.
+
+Las proyecciones cartográficas, tratan de situar los elementos de la superficie del elipsoide sobre una superficie plana. Se obtienen coordenadas cartesianas (la posición de un punto se define mediante un par de medidas de distancia x e y).
+
+
+Pero este proceso no es perfecto, se producen &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;distorsiones&lt;/span&gt;. Existen diversas proyecciones de mapa que ofrecen distintas propiedades. En algunas se mantiene la forma y, en otras, la distancia. En otras se mantiene el área o la dirección.
+
+---
+# Proyecciones cartográficas
+
+
+Mercator vs. Gall-Peters ([Video](https://www.youtube.com/watch?v=kIID5FDi2JQ)
+)
+
+&lt;img src="img/mercator_gallpeters.png" width="312" style="display: block; margin: auto;" /&gt;
+
+---
+class: inverse, center, middle
+# sf
+
+---
+# sf 
+
+- Un paquete para trabajar con datos espaciales en R.
+&lt;br&gt;&lt;br&gt;
+--
+
+- Combina las funcionalidades de 3 paquetes: **sp**, **rgeos** y **rgdal**
+&lt;br&gt;&lt;br&gt;
+--
+
+- Ventajas respecto a otros paquetes: 
+&lt;br&gt;&lt;br&gt;
+
+  - Mayor **velocidad** para importar y exportar los datos
+  &lt;br&gt;&lt;br&gt;
+  
+  - Más tipos de **geometrías** soportadas
+  &lt;br&gt;&lt;br&gt;
+  
+  - **Compatibilidad** con tidyverse. Funciona el pipe!
+  &lt;br&gt;&lt;br&gt;
+
+---
+# sf
+
+- El paquete **sp** es predecesor de sf.
+&lt;br&gt;&lt;br&gt;
+--
+
+- Muchos paquetes espaciales de R todavía dependen del paquete sp, por lo tanto, es importante saber cómo **convertir**.
+&lt;br&gt;&lt;br&gt;
+--
+
+- Convertir objetos  **sf** a **sp**
+
+
+```r
+# Para transformar de SF a SP
+objeto.sp &lt;- as(&lt;objeto.sf&gt;, "Spatial")
+```
+--
+
+- Convertir objetos  **sp** a **sf**
+
+
+```r
+# Para transformar de SP a SF
+objeto.sf &lt;- st_as_sf(&lt;objeto.sp&gt;)
+```
+
+
+---
+# Objetos de clase sf
+
+- Los objetos sf tienen una &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;clase&lt;/span&gt; que combina **'data.frame'** y **'sf'** 
+&lt;br&gt;&lt;br&gt;
+--
+
+- Los objetos sf también tienen una columna especial que contiene los datos de &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;geometría&lt;/span&gt;, usualmente llamado 'geom' o **'geometry'**.
+&lt;br&gt;&lt;br&gt;
+--
+
+- Las funciones del paquete &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;dplyr&lt;/span&gt; se pueden aplicar. Para saber la totalidad de funciones que son aplicables a un objeto de **clase 'sf'** consultar **methods()**.
+&lt;br&gt;&lt;br&gt;
+--
+
+- Los archivos con datos espaciales se leen con la función &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;st_read()&lt;/span&gt;.
+
+- Para la unión de objetos espaciales se usa &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;st_join(x, y)&lt;/span&gt;. El método de join utilizado es siempre **left join**, manteniendo los registros del primer atributo.
+
+- La visualización de la información espacial se puede realizar con &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;ggplot2&lt;/span&gt; usando &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;geom_sf()&lt;/span&gt;.
+
+---
+# ¿De dónde obtenemos las capas con información geográfica?
+
+- Dependiendo del país, será la institución oficial que las provea.
+
+- En Uruguay una gran cantidad de información encontrarán en la [&lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;IDE&lt;/span&gt;](https://www.gub.uy/infraestructura-datos-espaciales/).
+
+- Un paquete de R para trabajar con datos de Uruguay es [&lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;geouy&lt;/span&gt;](https://richdeto.github.io/geouy/)
+
+- Hay varios paquetes de R que ya traen información geográfica para hacer mapas del mundo o determinados países. Vamos a usar [rnaturalearthdata](https://cran.r-project.org/web/packages/rnaturalearthdata/index.html)
+
+- En otros casos deberemos &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;importar la información geográfica&lt;/span&gt; que puede venir en archivos de formato shp, geojson, etc.
+
+---
+class: inverse, center, middle
+# rnaturalearth
+
+
+---
+# Mapa de Latinoamérica
+
+La función  &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;ne_countries()&lt;/span&gt; devuelve los  &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;polígonos&lt;/span&gt; de los países de todo el mundo en una escala específica
+
+
+```r
+# pre-requisito instalar rgeos 
+*library(rnaturalearth)
+
+*world &lt;- ne_countries(scale = 'medium', returnclass = 'sf')
+```
+¿Qué clase de objeto es? ¿Dónde está guardada la información geográfica?
+
+
+```r
+class(world)
+```
+
+```
+[1] "sf"         "data.frame"
+```
+La información geográfica esta en la variable `geometry`
+
+```r
+names(world)
+world %&gt;% select(geometry) %&gt;% slice(1:5)
+```
+
+---
+# Sistema de coordenadas
+
+Por sus siglas en inglés CRS (Coordinate Reference System), se obtiene con la función &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;st_crs()&lt;/span&gt;.
+
+
+```r
+library(sf)
+st_crs(world)
+```
+
+```
+Coordinate Reference System:
+  User input: +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0 
+  wkt:
+BOUNDCRS[
+    SOURCECRS[
+        GEOGCRS["unknown",
+            DATUM["World Geodetic System 1984",
+                ELLIPSOID["WGS 84",6378137,298.257223563,
+                    LENGTHUNIT["metre",1]],
+                ID["EPSG",6326]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433],
+                ID["EPSG",8901]],
+            CS[ellipsoidal,2],
+                AXIS["longitude",east,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433,
+                        ID["EPSG",9122]]],
+                AXIS["latitude",north,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433,
+                        ID["EPSG",9122]]]]],
+    TARGETCRS[
+        GEOGCRS["WGS 84",
+            DATUM["World Geodetic System 1984",
+                ELLIPSOID["WGS 84",6378137,298.257223563,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["latitude",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["longitude",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4326]]],
+    ABRIDGEDTRANSFORMATION["Transformation from unknown to WGS84",
+        METHOD["Geocentric translations (geog2D domain)",
+            ID["EPSG",9603]],
+        PARAMETER["X-axis translation",0,
+            ID["EPSG",8605]],
+        PARAMETER["Y-axis translation",0,
+            ID["EPSG",8606]],
+        PARAMETER["Z-axis translation",0,
+            ID["EPSG",8607]]]]
+```
+
+WGS84 (World Geodetic System, 1984) es un sistema geodésico de coordenadas geográficas usado mundialmente, que permite localizar cualquier punto de la Tierra (sin necesitar otro de referencia) por medio de tres unidades dadas (x,y,z). [Wikipedia](https://es.wikipedia.org/wiki/WGS84)
+
+
+&lt;!-- md.map+coord_sf(crs = st_crs(4326)) --&gt;
+
+&lt;!-- Mercator ESPG:3857 - most common USA projection in google maps --&gt;
+
+&lt;!-- md.map+coord_sf(crs = st_crs(3857)) --&gt;
+
+&lt;!-- Selecting a projection - depends on spatial scope of map, goals --&gt;
+&lt;!-- Do you want to preserve precise angles and directions between objects or preserve areas? Usually cannot do all. --&gt;
+
+&lt;!-- https://rpubs.com/collnellphd/GWU_spatial --&gt;
+---
+class: inverse, center, middle
+# ggplot::geom_sf()
+
+---
+# Mapa de coropletas
+
+Es un **mapa temático** en el que las regiones se colorean de un motivo que muestra una **medida estadística**. [Buenas prácticas](https://blog.datawrapper.de/choroplethmaps/) 
+
+.pull-left[
+
+```r
+library(ggplot2)
+
+gworld &lt;- ggplot(data = world) +
+  geom_sf(aes(fill = region_wb)) +
+  scale_fill_viridis_d(option = "plasma") 
+```
+]
+
+.pull-right[
+&lt;img src="taller_sf_files/figure-html/unnamed-chunk-21-1.png" width="432" /&gt;
+
+]
+
+
+
+---
+# Sudamerica
+
+
+```r
+sudamerica &lt;- ne_countries(scale = 'medium',
+              returnclass = 'sf',
+              continent = "south america")
+
+class(sudamerica)
+```
+
+```
+[1] "sf"         "data.frame"
+```
+
+---
+# Mapa de coropletas
+
+&lt;!-- https://timogrossenbacher.ch/2016/12/beautiful-thematic-maps-with-ggplot2-only/ --&gt;
+&lt;!-- https://www.cgoodman.com/blog/archives/2018/06/16/maps-in-r-using-urbnmapr/ --&gt;
+&lt;!-- https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html --&gt;
+
+
+.pull-left[
+
+```r
+library(viridis) # trae paletas de colores
+
+# mapa de coropletas de todo el mundo. Los colores representan a la variable grupo de ingreso
+mapa_income &lt;- ggplot(data = sudamerica) + #income_grp
+  geom_sf(aes(fill = gdp_md_est),
+          color = 'black') +
+  scale_fill_viridis(alpha = .5,
+                     option = "D",
+                     direction = -1) 
+
+mapa_income
+```
+]
+
+.pull-right[
+&lt;img src="taller_sf_files/figure-html/unnamed-chunk-24-1.png" width="432" /&gt;
+]
+
+---
+class: middle, center, inverse
+# ggspatial::annotation()
+
+---
+# Norte y escala
+
+.pull-left[
+
+```r
+library(ggspatial)
+
+mapa_income &lt;- mapa_income +
+   annotation_scale(location = "bl",
+                    width_hint = 0.4) +
+   annotation_north_arrow(location = "tl",
+                          which_north = "true",
+                          height = unit(0.7, "cm"), 
+                          width = unit(0.7, "cm"),
+                          pad_x = unit(0.095, "in"),
+                          pad_y = unit(0.025, "in"),
+                          style = north_arrow_fancy_orienteering) 
+```
+
+]
+
+.pull-right[
+&lt;img src="taller_sf_files/figure-html/unnamed-chunk-26-1.png" width="432" /&gt;
+
+]
+
+---
+# Estilo de mapa
+
+.pull-left[
+
+```r
+mapa_income + 
+ labs(fill = "PIB") +
+ theme(panel.background = element_blank(),
+       line = element_blank(),      
+       legend.text = element_text(size = 7),
+       legend.title = element_text(size = 8),
+       axis.text.x = element_blank(),
+       axis.text.y = element_blank(),
+       legend.position = "bottom")
+```
+
+]
+
+.pull-right[
+&lt;img src="taller_sf_files/figure-html/unnamed-chunk-28-1.png" width="432" /&gt;
+
+]
+
+---
+# Mapa solo de Uruguay
+
+.pull-left[
+
+```r
+# seteo el tema para que sea el de todos los mapas
+theme_set(theme_bw())
+
+uy &lt;- world %&gt;% filter(admin == "Uruguay")
+
+mapa &lt;- ggplot(data = uy) +
+     geom_sf(fill = "#2ca25f") 
+```
+
+En este mapa no hay límites administrativos de departamentos, solo los límites del país.
+
+El color verde del mapa está escrito en [código hexadecimal](https://colorbrewer2.org/#type=sequential&amp;scheme=BuGn&amp;n=3) 
+
+&lt;!-- A hexadecimal color is specified with: #RRGGBB. RR (red), GG (green) and BB (blue) are hexadecimal integers between 00 and FF specifying the intensity of the color. For example, #0000FF is displayed as blue --&gt;
+]
+
+.pull-right[
+&lt;img src="taller_sf_files/figure-html/unnamed-chunk-30-1.png" width="432" /&gt;
+
+]
+
+---
+class: inverse, center, middle
+# geouy
+
+---
+# geouy
+
+Límites administrativos departamentos
+
+
+```r
+library(geouy)
+deptos &lt;- load_geouy("Departamentos")
+```
+
+```
+Reading layer `departamentos' from data source 
+  `https://mapas.mides.gub.uy/geoserver/IDE/ows?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;typeName=IDE:departamentos' 
+  using driver `GML'
+Simple feature collection with 19 features and 9 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 366582.2 ymin: 6127919 xmax: 858252.1 ymax: 6671738
+Projected CRS: WGS 84 / UTM zone 21S
+```
+
+```r
+class(deptos)
+```
+
+```
+[1] "sf"         "data.frame"
+```
+
+```r
+slice(deptos, 1:5)
+```
+
+```
+Simple feature collection with 5 features and 9 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 368497.6 ymin: 6133499 xmax: 686307.6 ymax: 6671738
+Projected CRS: WGS 84 / UTM zone 21S
+           gml_id gid  area perimeter uruguay_        x       y     nombre
+1 departamentos.1   1   530  202137.0       21 459602.3 6147931 MONTEVIDEO
+2 departamentos.2   2 11928  722385.9        2 390950.2 6614430    ARTIGAS
+3 departamentos.3   3  4536  404534.8       20 492241.9 6181019  CANELONES
+4 departamentos.5   4  6106  431056.4       17 331538.7 6221925    COLONIA
+5 departamentos.6   5 11643  821325.4       10 483476.2 6348540    DURAZNO
+  depto                       the_geom
+1  UYMO MULTIPOLYGON (((579197 6136...
+2  UYAR MULTIPOLYGON (((441318.2 66...
+3  UYCA MULTIPOLYGON (((587667.2 61...
+4  UYCO MULTIPOLYGON (((446550.3 61...
+5  UYDU MULTIPOLYGON (((545016.7 62...
+```
+
+---
+# Población a nivel de departamentos
+
+
+```r
+pob_depto &lt;- rio::import("data/P_1_MIG.xls")
+slice(pob_depto, 1:5)
+```
+
+```
+  depto_residencia   total hombres mujeres
+1       Montevideo 1292133  601160  690973
+2          Artigas   73170   35979   37191
+3        Canelones  518530  252330  266200
+4      Cerro Largo   84486   40939   43547
+5          Colonia  122743   59977   62766
+```
+Verifico las variables clave para hacer el join
+
+
+```r
+pob_depto %&gt;% count(depto_residencia %in% deptos$nombre)
+```
+
+```
+  depto_residencia %in% deptos$nombre  n
+1                               FALSE 19
+```
+
+```r
+# paso los valores a mayúscula
+pob_depto &lt;- pob_depto %&gt;% mutate(depto = toupper(depto_residencia))
+
+pob_depto %&gt;% count(depto %in% deptos$nombre)
+```
+
+```
+  depto %in% deptos$nombre  n
+1                    FALSE  3
+2                     TRUE 16
+```
+
+```r
+# hago un recode para los casos que el depto está escrito con tilde
+pob_depto &lt;- pob_depto %&gt;%
+  mutate(depto = case_when(
+  depto == "PAYSANDÚ" ~ "PAYSANDU",
+  depto == "SAN JOSÉ" ~ "SAN JOSE",
+  depto == "TACUAREMBÓ" ~ "TACUAREMBO",
+  TRUE ~ depto
+))
+
+pob_depto %&gt;% count(depto %in% deptos$nombre)
+```
+
+```
+  depto %in% deptos$nombre  n
+1                     TRUE 19
+```
+
+---
+# Uno objeto df con el objeto sf
+
+La variable clave no se llama igual en ambos objetos
+
+
+```r
+# uno deptos con el objeto espacial pob_depto
+deptos &lt;- left_join(deptos, pob_depto, by = c("nombre"="depto"))
+```
+
+¿Por qué no uso st_join()?
+
+---
+# Mapa
+  
+.pull-left[
+
+```r
+m &lt;- deptos %&gt;% 
+      ggplot() +
+      geom_sf(aes(fill = total)) # Defino la geometría
+```
+]
+
+.pull-right[
+&lt;img src="taller_sf_files/figure-html/unnamed-chunk-36-1.png" width="432" /&gt;
+]
+
+
+---
+class: inverse, center, middle
+# ggplot::scale_*()
+
+---
+# Cambio escala de colores
+
+.pull-left[
+
+```r
+m &lt;- deptos %&gt;% 
+      ggplot() +
+      geom_sf(aes(fill = total)) +
+      scale_fill_viridis_c("Población",
+                           option = "D",
+                           trans = "sqrt",
+                           alpha = .9) 
+```
+
+]
+
+.pull-right[
+&lt;img src="taller_sf_files/figure-html/unnamed-chunk-38-1.png" width="432" /&gt;
+]
+
+---
+# Quintiles
+
+- Una escala mejor resulta de considerar los quintiles de ingreso. 
+
+- Usamos el paquete &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;classInt&lt;/span&gt; para determinar los puntos de corte de la variable `total` usando la función &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;classIntervals()&lt;/span&gt;. 
+
+
+
+
+```r
+library(classInt)
+
+breaks &lt;- classIntervals(deptos$total,
+                         n = 5, 
+                         style = "quantile")
+
+breaks
+```
+
+```
+style: quantile
+  one of 3,060 possible partitions of this variable into 5 classes
+   [25008,58089.4)  [58089.4,74950.8) [74950.8,100721.4)  [100721.4,123497) 
+                 4                  4                  3                  4 
+  [123497,1292133] 
+                 4 
+```
+
+---
+# Quintiles
+
+
+.pull-left[
+Con la función &lt;span style=" font-weight: bold;    border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: #b3e2cd !important;" &gt;cut()&lt;/span&gt; realizamos los cortes en la variable `total` y generamos la variable `total_q`.
+
+
+```r
+deptos &lt;- deptos %&gt;% 
+  mutate(total_q = cut(total, 
+                       breaks$brks, 
+                       include.lowest = T))
+
+mapa_pob &lt;- ggplot(data = deptos) +
+  geom_sf(aes(fill = as.factor(total_q)),
+          color = "black") +
+  scale_fill_brewer(palette = "BuPu", direction= 1) +
+  theme(legend.position = 'bottom')
+```
+]
+
+.pull-right[
+&lt;img src="taller_sf_files/figure-html/unnamed-chunk-41-1.png" width="432" /&gt;
+]
+
+---
+# Ejercicio
+
+- Definir manualmente las etiquetas de la leyenda en el argumento labels de la función scale_fill_brewer()
+
+- Definir el título de la leyenda como Población
+
+- Cambiar el color que establece los límites de departamentos por 'white'
+
+- Agregar nombres de departamento con la función geom_sf_text().
+
+  &lt;!-- geom_sf_text(aes(label = nombre)) --&gt;
+&lt;!-- --- --&gt;
+&lt;!-- # Zoom en la zona de Uruguay --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- #The second map is very similar, but centered on the Gulf of Mexico (using coord_sf): --&gt;
+
+&lt;!-- ggulf &lt;- ggplot(data = world) + --&gt;
+&lt;!--   geom_sf(aes(fill = region_wb)) + --&gt;
+&lt;!--   annotate(geom = "text", x = -90, y = 26, label = "Gulf of Mexico",  --&gt;
+&lt;!--      fontface = "italic", color = "grey22", size = 6) + --&gt;
+&lt;!--   coord_sf(xlim = c(-102.15, -74.12), ylim = c(7.65, 33.97), expand = FALSE) + --&gt;
+&lt;!--   scale_fill_viridis_d(option = "plasma") + --&gt;
+&lt;!--   theme(legend.position = "none", axis.title.x = element_blank(),  --&gt;
+&lt;!--      axis.title.y = element_blank(), panel.background = element_rect(fill = "azure"),  --&gt;
+&lt;!--      panel.border = element_rect(fill = NA)) --&gt;
+
+&lt;!-- ``` --&gt;
+
+&lt;!-- &lt;!-- cowplot::plot_grid(gworld, ggulf, nrow = 1, rel_widths = c(2.3, 1)) --&gt; --&gt;
+
+
+
+&lt;!-- https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf --&gt;
+
+&lt;!-- https://spatialreference.org/ --&gt;
+
+&lt;!-- https://slcladal.github.io/maps.html --&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9",
+"slideNumberFormat": "<div class=\"progress-bar-container\">\n  <div class=\"progress-bar\" style=\"width: calc(%current% / %total% * 100%);\">\n  </div>\n</div>\n"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="svg2"
+   width="196"
+   height="98"
+   viewBox="0 0 196 98"
+   sodipodi:docname="gg.svg"
+   inkscape:version="0.92.5 (0.92.5+68)"
+   inkscape:export-filename="/home/calcita/MEGA/R/JOBS/Cursos y presentaciones/UCU/escuelainvierno_ucu/2020/Slides/code/img/gg_data_mapping_geoms.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <metadata
+     id="metadata8">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs6" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     id="namedview4"
+     showgrid="false"
+     inkscape:snap-text-baseline="true"
+     inkscape:zoom="1.6077738"
+     inkscape:cx="-32.631711"
+     inkscape:cy="51.283033"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <g
+     id="g4547-2-4"
+     transform="matrix(0.84534833,0,0,0.85652625,173.46232,104.74351)"
+     style="fill:#241c1c">
+    <path
+       style="opacity:0.81600001;fill:#241c1c;fill-opacity:0.93896712"
+       id="path4545-1-4"
+       sodipodi:type="arc"
+       sodipodi:cx="69.720001"
+       sodipodi:cy="-65.239998"
+       sodipodi:rx="46.759998"
+       sodipodi:ry="45.080002"
+       sodipodi:start="0"
+       sodipodi:end="6.2819461"
+       d="m 116.48,-65.239998 a 46.759998,45.080002 0 0 1 -46.745512,45.08 46.759998,45.080002 0 0 1 -46.774476,-45.052068 46.759998,45.080002 0 0 1 46.71653,-45.107914 46.759998,45.080002 0 0 1 46.803418,45.024119 l -46.759959,0.05586 z" />
+  </g>
+  <path
+     style="opacity:0.81600001;fill:#cc00ff;fill-opacity:0.93896712;stroke-width:0.99999994"
+     id="path817-4-2"
+     sodipodi:type="arc"
+     sodipodi:cx="232.29007"
+     sodipodi:cy="49.083641"
+     sodipodi:rx="36.119999"
+     sodipodi:ry="35.279999"
+     sodipodi:start="0"
+     sodipodi:end="6.2819461"
+     d="M 268.41007,49.083641 A 36.119999,35.279999 0 0 1 232.30126,84.363638 36.119999,35.279999 0 0 1 196.17008,49.105501 36.119999,35.279999 0 0 1 232.2565,13.803658 36.119999,35.279999 0 0 1 268.41004,49.039922 l -36.11997,0.04372 z" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.33333349px;line-height:1.25;font-family:OpenDyslexic;-inkscape-font-specification:'OpenDyslexic, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.99999994"
+     x="197.85004"
+     y="54.043636"
+     id="text829-7-9"><tspan
+       sodipodi:role="line"
+       id="tspan827-6-4"
+       x="197.85004"
+       y="54.043636"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.66666603px;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.99999994">Geometry</tspan></text>
+  <g
+     id="g4547"
+     transform="matrix(0.84534832,0,0,0.85652625,-8.867735,104.45987)"
+     style="fill:#241c1c">
+    <path
+       style="opacity:0.81600001;fill:#241c1c;fill-opacity:0.93896712"
+       id="path4545"
+       sodipodi:type="arc"
+       sodipodi:cx="69.720001"
+       sodipodi:cy="-65.239998"
+       sodipodi:rx="46.759998"
+       sodipodi:ry="45.080002"
+       sodipodi:start="0"
+       sodipodi:end="6.2819461"
+       d="m 116.48,-65.239998 a 46.759998,45.080002 0 0 1 -46.745512,45.08 46.759998,45.080002 0 0 1 -46.774476,-45.052068 46.759998,45.080002 0 0 1 46.71653,-45.107914 46.759998,45.080002 0 0 1 46.803418,45.024119 l -46.759959,0.05586 z" />
+  </g>
+  <path
+     style="opacity:0.81600001;fill:#ff7f2a;fill-opacity:0.93896712"
+     id="path817"
+     sodipodi:type="arc"
+     sodipodi:cx="49.959999"
+     sodipodi:cy="48.800003"
+     sodipodi:rx="36.119999"
+     sodipodi:ry="35.279999"
+     sodipodi:start="0"
+     sodipodi:end="6.2819461"
+     d="M 86.079998,48.800003 A 36.119999,35.279999 0 0 1 49.971189,84.08 36.119999,35.279999 0 0 1 13.840007,48.821863 36.119999,35.279999 0 0 1 49.926429,13.52002 36.119999,35.279999 0 0 1 86.07997,48.756284 l -36.119971,0.04372 z" />
+  <flowRoot
+     xml:space="preserve"
+     id="flowRoot819"
+     style="fill:black;fill-opacity:1;stroke:none;font-family:OpenDyslexic;font-style:normal;font-weight:normal;font-size:5.33333333px;line-height:1.25;letter-spacing:0px;word-spacing:0px;-inkscape-font-specification:'OpenDyslexic, Normal';font-stretch:normal;font-variant:normal;text-anchor:start;text-align:start;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal"><flowRegion
+       id="flowRegion821"><rect
+         id="rect823"
+         width="60.48"
+         height="25.76"
+         x="21.280001"
+         y="-74.480003" /></flowRegion><flowPara
+       id="flowPara825" /></flowRoot>  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.33333349px;line-height:1.25;font-family:OpenDyslexic;-inkscape-font-specification:'OpenDyslexic, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none"
+     x="33.52"
+     y="53.760002"
+     id="text829"><tspan
+       sodipodi:role="line"
+       id="tspan827"
+       x="33.52"
+       y="53.760002"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.66666603px;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start">Data</tspan></text>
+  <flowRoot
+     xml:space="preserve"
+     id="flowRoot4697"
+     style="fill:black;fill-opacity:1;stroke:none;font-family:OpenDyslexic;font-style:normal;font-weight:normal;font-size:5.33333333px;line-height:1.25;letter-spacing:0px;word-spacing:0px;-inkscape-font-specification:'OpenDyslexic, Normal';font-stretch:normal;font-variant:normal;text-anchor:start;text-align:start;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal"><flowRegion
+       id="flowRegion4699"><rect
+         id="rect4701"
+         width="144.0361"
+         height="87.30127"
+         x="244.75142"
+         y="67.873367" /></flowRegion><flowPara
+       id="flowPara4703" /></flowRoot>  <g
+     id="g4547-2"
+     transform="matrix(0.84534833,0,0,0.85652625,83.178803,105.23142)"
+     style="fill:#241c1c">
+    <path
+       style="opacity:0.81600001;fill:#241c1c;fill-opacity:0.93896712"
+       id="path4545-1"
+       sodipodi:type="arc"
+       sodipodi:cx="69.720001"
+       sodipodi:cy="-65.239998"
+       sodipodi:rx="46.759998"
+       sodipodi:ry="45.080002"
+       sodipodi:start="0"
+       sodipodi:end="6.2819461"
+       d="m 116.48,-65.239998 a 46.759998,45.080002 0 0 1 -46.745512,45.08 46.759998,45.080002 0 0 1 -46.774476,-45.052068 46.759998,45.080002 0 0 1 46.71653,-45.107914 46.759998,45.080002 0 0 1 46.803418,45.024119 l -46.759959,0.05586 z" />
+  </g>
+  <path
+     style="opacity:0.81600001;fill:#00aa88;fill-opacity:0.93896712;stroke-width:0.99999994"
+     id="path817-4"
+     sodipodi:type="arc"
+     sodipodi:cx="142.00655"
+     sodipodi:cy="49.57156"
+     sodipodi:rx="36.119999"
+     sodipodi:ry="35.279999"
+     sodipodi:start="0"
+     sodipodi:end="6.2819461"
+     d="m 178.12654,49.57156 a 36.119999,35.279999 0 0 1 -36.1088,35.279997 36.119999,35.279999 0 0 1 -36.13119,-35.258137 36.119999,35.279999 0 0 1 36.08643,-35.301844 36.119999,35.279999 0 0 1 36.15354,35.236265 l -36.11997,0.04372 z" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.33333349px;line-height:1.25;font-family:OpenDyslexic;-inkscape-font-specification:'OpenDyslexic, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.99999994"
+     x="107.56653"
+     y="54.531555"
+     id="text829-7"><tspan
+       sodipodi:role="line"
+       id="tspan827-6"
+       x="107.56653"
+       y="54.531555"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.66666603px;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;stroke-width:0.99999994">Aesthetics</tspan></text>
+</svg>
